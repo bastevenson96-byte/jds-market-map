@@ -1,158 +1,116 @@
-import React, { useState, useRef, useCallback, useMemo } from 'react'
-import { COMPANIES, CATEGORIES } from './data/companies'
-import FilterBar from './components/FilterBar'
+import React, { useState } from 'react'
+import { COMPANIES, AUDIENCE_COLORS } from './data/companies'
 import MarketMap from './components/MarketMap'
-import CompanyPanel from './components/CompanyPanel'
 import PasswordGate, { isAuthenticated } from './components/PasswordGate'
 
 export default function App() {
   const [authed, setAuthed] = useState(isAuthenticated)
-  const [selectedCompany, setSelectedCompany] = useState(null)
-  const [activeTier, setActiveTier] = useState(null)
-  const [activeCategories, setActiveCategories] = useState(new Set(CATEGORIES))
   const [searchQuery, setSearchQuery] = useState('')
-  const [showIncumbents, setShowIncumbents] = useState(true)
-
-  const mapRef = useRef(null)
-
-  const filteredCount = useMemo(() => {
-    return COMPANIES.filter(c => {
-      if (!activeCategories.has(c.category)) return false
-      if (!showIncumbents && (c.status === 'Established' || c.status === 'Acquired' || c.status === 'Regulatory Body')) return false
-      if (activeTier !== null && c.tier !== activeTier) return false
-      if (searchQuery) {
-        const q = searchQuery.toLowerCase()
-        return (
-          c.name.toLowerCase().includes(q) ||
-          c.description.toLowerCase().includes(q) ||
-          c.category.toLowerCase().includes(q)
-        )
-      }
-      return true
-    }).length
-  }, [activeCategories, showIncumbents, activeTier, searchQuery])
-
-  const handleExport = useCallback(async () => {
-    try {
-      const { default: html2canvas } = await import('html2canvas')
-      const el = mapRef.current
-      if (!el) return
-
-      // Temporarily expand scroll container to capture full grid
-      const prevMaxH   = el.style.maxHeight
-      const prevOverflow = el.style.overflow
-      el.style.maxHeight = 'none'
-      el.style.overflow = 'visible'
-
-      const canvas = await html2canvas(el, {
-        backgroundColor: '#F7F6F3',
-        scale: 2,
-        useCORS: true,
-        logging: false,
-      })
-
-      el.style.maxHeight = prevMaxH
-      el.style.overflow  = prevOverflow
-
-      const link = document.createElement('a')
-      link.download = `jds-market-map-${new Date().toISOString().slice(0, 10)}.png`
-      link.href = canvas.toDataURL('image/png')
-      link.click()
-    } catch (err) {
-      console.error('Export failed:', err)
-      alert('Export failed. Please try again.')
-    }
-  }, [])
 
   if (!authed) {
     return <PasswordGate onAuthenticated={() => setAuthed(true)} />
   }
 
   return (
-    <div className="flex flex-col h-screen bg-[#F7F6F3]">
-      {/* ── Sticky header ─────────────────────────────────────── */}
+    <div className="flex flex-col h-screen" style={{ backgroundColor: '#0F172A' }}>
+      {/* Header */}
       <header className="sticky top-0 z-40 bg-[#111827] text-white flex items-center justify-between px-5 h-16 shrink-0 shadow-lg">
         <div className="flex items-center gap-4">
-          {/* Logo */}
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-md bg-indigo-500 flex items-center justify-center text-white font-black text-sm">
               J
             </div>
             <span className="font-bold text-sm tracking-tight text-white">JDS Sports</span>
           </div>
-
           <div className="w-px h-6 bg-white/20" />
-
           <div>
             <h1 className="text-sm font-semibold leading-none">College Sports Startup Market Map</h1>
-            <p className="text-[11px] text-gray-400 mt-0.5">JDS Sports · Internal Research · May 2026</p>
+            <p className="text-[11px] text-gray-400 mt-0.5">JDS Sports · Internal Research · Jun 2026</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
+          {/* Search */}
+          <div className="relative">
+            <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder="Search companies…"
+              className="pl-8 pr-3 py-1.5 text-xs rounded-full w-44 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-700 text-white placeholder-gray-400 border border-gray-600"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+              >
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+          </div>
+
           <span className="text-xs text-gray-400">
-            <span className="text-white font-semibold">{COMPANIES.length}</span> companies tracked
+            <span className="text-white font-semibold">{COMPANIES.length}</span> companies
           </span>
         </div>
       </header>
 
-      {/* ── Filter bar ────────────────────────────────────────── */}
-      <FilterBar
-        activeTier={activeTier}
-        setActiveTier={setActiveTier}
-        activeCategories={activeCategories}
-        setActiveCategories={setActiveCategories}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        showIncumbents={showIncumbents}
-        setShowIncumbents={setShowIncumbents}
-        filteredCount={filteredCount}
-        totalCount={COMPANIES.length}
-        onExport={handleExport}
-      />
+      {/* Legend */}
+      <div className="shrink-0 bg-[#1A2435] border-b border-gray-700/70 px-6 py-2.5 flex items-center gap-5 flex-wrap">
+        <span className="text-[11px] text-gray-500 font-semibold uppercase tracking-wider">Built for</span>
 
-      {/* ── Market map grid ───────────────────────────────────── */}
-      <MarketMap
-        ref={mapRef}
-        companies={COMPANIES}
-        activeTier={activeTier}
-        activeCategories={activeCategories}
-        searchQuery={searchQuery}
-        showIncumbents={showIncumbents}
-        onSelectCompany={setSelectedCompany}
-      />
-
-      {/* ── Company detail panel ──────────────────────────────── */}
-      <CompanyPanel
-        company={selectedCompany}
-        onClose={() => setSelectedCompany(null)}
-      />
-
-      {/* ── Footer legend ─────────────────────────────────────── */}
-      <footer className="shrink-0 bg-white border-t border-gray-200 px-5 py-2 flex items-center gap-6 overflow-x-auto">
-        <span className="text-[11px] text-gray-400 font-medium shrink-0">Legend</span>
-        {[
-          { label: 'JDS Top 10', icon: '★', color: '#B45309' },
-          { label: 'Active', color: '#059669' },
-          { label: 'Established', color: '#2563EB' },
-          { label: 'Acquired', color: '#DC2626', extra: 'line-through' },
-          { label: 'Nonprofit', color: '#D97706' },
-          { label: 'Regulatory Body', color: '#475569' },
-        ].map(({ label, icon, color, extra }) => (
-          <div key={label} className="flex items-center gap-1 shrink-0">
-            {icon && <span style={{ color }} className="text-xs">{icon}</span>}
-            <span className={`text-[11px] text-gray-600 ${extra || ''}`} style={extra ? { textDecorationColor: color } : undefined}>
-              {label}
-            </span>
-            {!icon && (
-              <span className="w-1.5 h-1.5 rounded-full ml-0.5" style={{ backgroundColor: color }} />
-            )}
+        {Object.entries(AUDIENCE_COLORS).map(([audience, color]) => (
+          <div key={audience} className="flex items-center gap-1.5">
+            <span
+              className="w-2.5 h-2.5 rounded-sm shrink-0"
+              style={{ backgroundColor: color }}
+            />
+            <span className="text-[11px] text-gray-300">{audience}</span>
           </div>
         ))}
-        <span className="ml-auto text-[11px] text-gray-400 shrink-0">
-          Press <kbd className="px-1 py-0.5 text-[10px] bg-gray-100 border border-gray-200 rounded font-mono">Esc</kbd> to close panel
-        </span>
-      </footer>
+
+        <div className="w-px h-3.5 bg-gray-600 mx-0.5" />
+
+        <div className="flex items-center gap-1.5">
+          <span
+            className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] text-white font-medium"
+            style={{
+              backgroundColor: '#6B7280',
+              borderRadius: '6px',
+              border: '2px solid rgba(255,255,255,0.45)',
+            }}
+          >
+            <span className="text-[9px]">●</span>
+            Scale
+          </span>
+          <span className="text-[11px] text-gray-400">= Established Scale</span>
+        </div>
+
+        <div className="flex items-center gap-1.5">
+          <span
+            className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] text-white font-medium"
+            style={{
+              backgroundColor: '#6B7280',
+              borderRadius: '6px',
+              border: '1px solid rgba(0,0,0,0.12)',
+            }}
+          >
+            Growth
+          </span>
+          <span className="text-[11px] text-gray-400">= Early Growth</span>
+        </div>
+      </div>
+
+      {/* Market map */}
+      <MarketMap
+        companies={COMPANIES}
+        searchQuery={searchQuery}
+      />
     </div>
   )
 }
