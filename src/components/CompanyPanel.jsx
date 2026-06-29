@@ -84,6 +84,9 @@ export default function CompanyPanel({ company, onClose }) {
             <h2 className={`text-xl font-bold text-gray-900 leading-tight ${company.status === 'Acquired' ? 'line-through decoration-red-400' : ''}`}>
               {company.name}
             </h2>
+            {company.description && (
+              <p className="mt-1.5 text-xs text-gray-400 italic leading-relaxed line-clamp-3">{company.description}</p>
+            )}
           </div>
           <button
             onClick={onClose}
@@ -138,14 +141,6 @@ export default function CompanyPanel({ company, onClose }) {
               </div>
             )}
           </div>
-
-          {/* Description */}
-          {company.description && (
-            <div>
-              <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Description</h3>
-              <p className="text-sm text-gray-700 leading-relaxed">{company.description}</p>
-            </div>
-          )}
 
           {/* Partners */}
           {company.partners && (
