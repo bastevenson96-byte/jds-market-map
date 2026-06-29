@@ -145,9 +145,16 @@ function SidePanel({ company, onClose }) {
               </div>
 
               {/* Company name */}
-              <h2 style={{ color: 'white', fontSize: '22px', fontWeight: '800', lineHeight: 1.2, margin: '0 0 16px 0' }}>
+              <h2 style={{ color: 'white', fontSize: '22px', fontWeight: '800', lineHeight: 1.2, margin: '0 0 8px 0' }}>
                 {company.name}
               </h2>
+
+              {/* Description */}
+              {company.description && (
+                <p style={{ color: '#9CA3AF', fontSize: '13px', fontStyle: 'italic', lineHeight: 1.6, margin: '0 0 16px 0' }}>
+                  {company.description}
+                </p>
+              )}
 
               {/* Badges */}
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '24px' }}>
