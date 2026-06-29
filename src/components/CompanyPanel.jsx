@@ -84,6 +84,7 @@ export default function CompanyPanel({ company, onClose }) {
             <h2 className={`text-xl font-bold text-gray-900 leading-tight ${company.status === 'Acquired' ? 'line-through decoration-red-400' : ''}`}>
               {company.name}
             </h2>
+            {console.log('company data:', company)}
             {company.description && (
               <p className="mt-2 text-sm text-gray-400 italic leading-relaxed">
                 {company.description}
