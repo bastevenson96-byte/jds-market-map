@@ -85,7 +85,7 @@ export default function CompanyPanel({ company, onClose }) {
               {company.name}
             </h2>
             {company.description && (
-              <p className="mt-1.5 text-xs text-gray-400 italic leading-relaxed line-clamp-3">{company.description}</p>
+              <p className="mt-1.5 text-sm text-gray-400 italic leading-relaxed line-clamp-3">{company.description}</p>
             )}
           </div>
           <button
