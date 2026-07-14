@@ -5,6 +5,7 @@ import PasswordGate, { isAuthenticated } from './components/PasswordGate'
 
 export default function App() {
   const [authed, setAuthed] = useState(isAuthenticated)
+  const [framework, setFramework] = useState('v1')
 
   if (!authed) {
     return <PasswordGate onAuthenticated={() => setAuthed(true)} />
@@ -61,12 +62,52 @@ export default function App() {
           </p>
         </div>
 
-        <div style={{ marginLeft: 'auto', fontSize: '12px', color: '#6B7280' }}>
-          <span style={{ color: 'white', fontWeight: '600' }}>{COMPANIES.length}</span> companies
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div
+            style={{
+              display: 'inline-flex',
+              backgroundColor: '#1F2937',
+              border: '1px solid #374151',
+              borderRadius: '9999px',
+              padding: '2px',
+              gap: '2px',
+            }}
+          >
+            {[
+              { key: 'v1', label: 'Framework 1' },
+              { key: 'v2', label: 'Framework 2' },
+            ].map(({ key, label }) => {
+              const active = framework === key
+              return (
+                <button
+                  key={key}
+                  onClick={() => setFramework(key)}
+                  style={{
+                    border: 'none',
+                    borderRadius: '9999px',
+                    padding: '5px 14px',
+                    fontSize: '12px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    backgroundColor: active ? '#6366F1' : 'transparent',
+                    color: active ? 'white' : '#9CA3AF',
+                    transition: 'all 0.15s ease',
+                    outline: 'none',
+                  }}
+                >
+                  {label}
+                </button>
+              )
+            })}
+          </div>
+
+          <div style={{ fontSize: '12px', color: '#6B7280' }}>
+            <span style={{ color: 'white', fontWeight: '600' }}>{COMPANIES.length}</span> companies
+          </div>
         </div>
       </header>
 
-      <MarketMap companies={COMPANIES} />
+      <MarketMap companies={COMPANIES} framework={framework} />
     </div>
   )
 }

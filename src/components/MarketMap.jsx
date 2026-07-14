@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
-import { CATEGORIES, AUDIENCE_COLORS, notionUrl } from '../data/companies'
+import { CATEGORIES, CATEGORIES_V2, AUDIENCE_COLORS, notionUrl } from '../data/companies'
 
 const AUDIENCES = ['Athlete', 'Institution', 'Brand', 'Consumer']
 const STAGES = ['Early Growth', 'Established Scale']
@@ -8,6 +8,17 @@ const CATEGORY_STYLE = {
   'Tech': { color: '#818CF8', label: 'Tech' },
   'Media': { color: '#FB7185', label: 'Media' },
   'Athlete Organization': { color: '#34D399', label: 'Athlete\nOrganization' },
+}
+
+const CATEGORY_STYLE_V2 = {
+  'Athlete Infrastructure': { color: '#818CF8', label: 'Athlete Infrastructure' },
+  'Fan Culture and IP': { color: '#FB7185', label: 'Fan Culture & IP' },
+  'Access Development and Participation': { color: '#34D399', label: 'Access, Development\n& Participation' },
+}
+
+const COLUMN_WIDTHS = {
+  v1: '60fr 25fr 15fr',
+  v2: '45fr 35fr 20fr',
 }
 
 function CompanyChip({ company, isDimmed, onClick }) {
@@ -276,7 +287,7 @@ function DetailRow({ label, value }) {
   )
 }
 
-export default function MarketMap({ companies }) {
+export default function MarketMap({ companies, framework = 'v1' }) {
   const [audienceFilters, setAudienceFilters] = useState(new Set())
   const [stageFilters, setStageFilters] = useState(new Set())
   const [selectedCompany, setSelectedCompany] = useState(null)
@@ -441,11 +452,14 @@ export default function MarketMap({ companies }) {
       </div>
 
       {/* Three-column grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '60fr 25fr 15fr', minHeight: 'calc(100vh - 64px)' }}>
-        {CATEGORIES.map((category, idx) => {
-          const catCompanies = companies.filter(c => c.category === category)
-          const style = CATEGORY_STYLE[category]
-          const isLast = idx === CATEGORIES.length - 1
+      <div style={{ display: 'grid', gridTemplateColumns: COLUMN_WIDTHS[framework], minHeight: 'calc(100vh - 64px)' }}>
+        {(framework === 'v2' ? CATEGORIES_V2 : CATEGORIES).map((category, idx) => {
+          const catCompanies = framework === 'v2'
+            ? companies.filter(c => c.categoryV2 === category)
+            : companies.filter(c => c.category === category)
+          const style = framework === 'v2' ? CATEGORY_STYLE_V2[category] : CATEGORY_STYLE[category]
+          const total = framework === 'v2' ? CATEGORIES_V2.length : CATEGORIES.length
+          const isLast = idx === total - 1
 
           return (
             <div
