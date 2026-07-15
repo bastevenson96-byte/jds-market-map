@@ -5,7 +5,7 @@ import PasswordGate, { isAuthenticated } from './components/PasswordGate'
 
 export default function App() {
   const [authed, setAuthed] = useState(isAuthenticated)
-  const [framework, setFramework] = useState('v1')
+  const [framework, setFramework] = useState('v2')
 
   if (!authed) {
     return <PasswordGate onAuthenticated={() => setAuthed(true)} />
@@ -74,8 +74,8 @@ export default function App() {
             }}
           >
             {[
-              { key: 'v1', label: 'Framework 1' },
-              { key: 'v2', label: 'Framework 2' },
+              { key: 'v2', label: 'Framework 1' },
+              { key: 'v1', label: 'Framework 2' },
             ].map(({ key, label }) => {
               const active = framework === key
               return (
