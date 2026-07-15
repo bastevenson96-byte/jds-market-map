@@ -435,7 +435,7 @@ export default function MarketMap({ companies, framework = 'v1' }) {
                 }}
               >
                 {s === 'Established Scale' && (
-                  <span style={{ fontSize: '10px', lineHeight: 1 }}>●</span>
+                  <span style={{ fontSize: '10px', lineHeight: 1 }}>★</span>
                 )}
                 {s}
               </button>
