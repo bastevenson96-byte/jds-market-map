@@ -29,23 +29,10 @@ export default function App() {
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div
-            style={{
-              width: '28px',
-              height: '28px',
-              borderRadius: '6px',
-              backgroundColor: '#6366F1',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'white',
-              fontWeight: '900',
-              fontSize: '14px',
-              flexShrink: 0,
-            }}
-          >
-            J
-          </div>
+          <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
+            <circle cx="20" cy="20" r="19" fill="#111" stroke="white" strokeWidth="2" />
+            <text x="20" y="25" textAnchor="middle" fill="white" fontFamily="Arial, sans-serif" fontSize="11" fontWeight="bold" letterSpacing="1">JDS</text>
+          </svg>
           <span style={{ color: 'white', fontWeight: '700', fontSize: '14px', letterSpacing: '-0.01em' }}>
             JDS Sports
           </span>
