@@ -500,13 +500,17 @@ export default function MarketMap({ companies, framework = 'v1' }) {
                   alignContent: 'flex-start',
                 }}
               >
-                {catCompanies.map(company => (
-                  <CompanyChip
-                    key={company.name}
-                    company={company}
-                    isDimmed={!matchesFilters(company)}
-                    onClick={setSelectedCompany}
-                  />
+                {catCompanies.map((company, i) => (
+                  <React.Fragment key={company.name}>
+                    {i > 0 && company.builtFor[0] !== catCompanies[i - 1].builtFor[0] && (
+                      <div style={{ flexBasis: '100%', height: 0 }} />
+                    )}
+                    <CompanyChip
+                      company={company}
+                      isDimmed={!matchesFilters(company)}
+                      onClick={setSelectedCompany}
+                    />
+                  </React.Fragment>
                 ))}
               </div>
             </div>
