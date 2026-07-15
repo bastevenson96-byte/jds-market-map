@@ -25,16 +25,17 @@ function CompanyChip({ company, isDimmed, onClick }) {
   const primaryAudience = company.builtFor[0]
   const bgColor = AUDIENCE_COLORS[primaryAudience] || '#6B7280'
   const isEstablished = company.stage === 'Established'
-  const extraCount = company.builtFor.length - 1
+  const hasMultipleAudiences = company.builtFor.length > 1
 
   return (
     <button
       onClick={() => !isDimmed && onClick(company)}
       style={{
+        position: 'relative',
         display: 'inline-flex',
         alignItems: 'center',
         gap: '4px',
-        padding: '4px 10px',
+        padding: hasMultipleAudiences ? '4px 10px 10px 10px' : '4px 10px',
         fontSize: '12px',
         fontWeight: isEstablished ? '700' : '500',
         color: 'white',
@@ -56,21 +57,33 @@ function CompanyChip({ company, isDimmed, onClick }) {
       onMouseLeave={e => { if (!isDimmed) e.currentTarget.style.opacity = '1' }}
     >
       {isEstablished && (
-        <span style={{ fontSize: '10px', lineHeight: 1, marginRight: '1px' }}>●</span>
+        <span style={{ fontSize: '10px', lineHeight: 1, marginRight: '1px' }}>★</span>
       )}
       <span>{company.name}</span>
-      {extraCount > 0 && (
+      {hasMultipleAudiences && (
         <span
           style={{
-            fontSize: '10px',
-            fontWeight: '700',
-            background: 'rgba(0,0,0,0.25)',
-            borderRadius: '3px',
-            padding: '1px 4px',
-            lineHeight: 1,
+            position: 'absolute',
+            bottom: '3px',
+            right: '6px',
+            display: 'flex',
+            gap: '2px',
           }}
         >
-          +{extraCount}
+          {company.builtFor.map(audience => (
+            <span
+              key={audience}
+              style={{
+                width: '6px',
+                height: '6px',
+                borderRadius: '9999px',
+                backgroundColor: AUDIENCE_COLORS[audience] || '#6B7280',
+                border: '1px solid rgba(255,255,255,0.55)',
+                display: 'inline-block',
+                flexShrink: 0,
+              }}
+            />
+          ))}
         </span>
       )}
     </button>
