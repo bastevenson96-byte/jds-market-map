@@ -447,9 +447,10 @@ export default function MarketMap({ companies, framework = 'v1' }) {
       {/* Three-column grid */}
       <div style={{ display: 'grid', gridTemplateColumns: COLUMN_WIDTHS[framework], minHeight: 'calc(100vh - 64px)' }}>
         {(framework === 'v2' ? CATEGORIES_V2 : CATEGORIES).map((category, idx) => {
-          const catCompanies = framework === 'v2'
+          const catCompanies = (framework === 'v2'
             ? companies.filter(c => c.categoryV2 === category)
             : companies.filter(c => c.category === category)
+          ).slice().sort((a, b) => AUDIENCES.indexOf(a.builtFor[0]) - AUDIENCES.indexOf(b.builtFor[0]))
           const style = framework === 'v2' ? CATEGORY_STYLE_V2[category] : CATEGORY_STYLE[category]
           const total = framework === 'v2' ? CATEGORIES_V2.length : CATEGORIES.length
           const isLast = idx === total - 1
