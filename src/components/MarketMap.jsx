@@ -352,7 +352,7 @@ export default function MarketMap({ companies, framework = 'v1' }) {
         }}
       >
         {/* Filters row */}
-        <div style={{ padding: '10px 20px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '8px', borderBottom: '1px solid #1F2937' }}>
+        <div style={{ padding: '10px 20px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '8px' }}>
           <span style={{ fontSize: '11px', color: '#6B7280', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.08em', marginRight: '4px' }}>
             Audience
           </span>
@@ -373,8 +373,22 @@ export default function MarketMap({ companies, framework = 'v1' }) {
                   color: active ? 'white' : '#6B7280',
                   transition: 'all 0.15s ease',
                   outline: 'none',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
                 }}
               >
+                <span
+                  style={{
+                    width: '8px',
+                    height: '8px',
+                    borderRadius: '9999px',
+                    backgroundColor: AUDIENCE_COLORS[a],
+                    display: 'inline-block',
+                    flexShrink: 0,
+                    border: active ? '1px solid rgba(255,255,255,0.6)' : 'none',
+                  }}
+                />
                 {a}
               </button>
             )
@@ -414,40 +428,6 @@ export default function MarketMap({ companies, framework = 'v1' }) {
               </button>
             )
           })}
-        </div>
-
-        {/* Legend row */}
-        <div style={{ padding: '7px 20px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '16px' }}>
-          <span style={{ fontSize: '11px', color: '#6B7280', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-            Built for
-          </span>
-          {Object.entries(AUDIENCE_COLORS).map(([audience, color]) => (
-            <div key={audience} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ width: '10px', height: '10px', borderRadius: '2px', backgroundColor: color, display: 'inline-block', flexShrink: 0 }} />
-              <span style={{ fontSize: '11px', color: '#D1D5DB' }}>{audience}</span>
-            </div>
-          ))}
-          <div style={{ width: '1px', height: '14px', backgroundColor: '#4B5563' }} />
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '4px',
-                padding: '2px 8px',
-                fontSize: '11px',
-                color: 'white',
-                fontWeight: '600',
-                backgroundColor: '#6B7280',
-                borderRadius: '6px',
-                border: '2px solid rgba(255,255,255,0.45)',
-              }}
-            >
-              <span style={{ fontSize: '9px' }}>●</span>
-              Scale
-            </span>
-            <span style={{ fontSize: '11px', color: '#9CA3AF' }}>= Established Scale</span>
-          </div>
         </div>
       </div>
 
