@@ -22,71 +22,106 @@ const COLUMN_WIDTHS = {
 }
 
 function CompanyChip({ company, isDimmed, onClick }) {
+  const [showTooltip, setShowTooltip] = useState(false)
   const primaryAudience = company.builtFor[0]
   const bgColor = AUDIENCE_COLORS[primaryAudience] || '#6B7280'
   const isEstablished = company.stage === 'Established'
   const hasMultipleAudiences = company.builtFor.length > 1
 
   return (
-    <button
-      onClick={() => !isDimmed && onClick(company)}
-      style={{
-        position: 'relative',
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: '4px',
-        padding: hasMultipleAudiences ? '4px 10px 10px 10px' : '4px 10px',
-        fontSize: '12px',
-        fontWeight: isEstablished ? '700' : '500',
-        color: 'white',
-        backgroundColor: bgColor,
-        borderRadius: '8px',
-        border: isEstablished
-          ? '2px solid rgba(255,255,255,0.55)'
-          : '1px solid rgba(0,0,0,0.15)',
-        boxShadow: isEstablished
-          ? '0 0 0 1px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.2)'
-          : '0 1px 2px rgba(0,0,0,0.15)',
-        cursor: isDimmed ? 'default' : 'pointer',
-        opacity: isDimmed ? 0.15 : 1,
-        transition: 'opacity 0.2s ease, transform 0.1s ease',
-        outline: 'none',
-        whiteSpace: 'nowrap',
-      }}
-      onMouseEnter={e => { if (!isDimmed) e.currentTarget.style.opacity = '0.85' }}
-      onMouseLeave={e => { if (!isDimmed) e.currentTarget.style.opacity = '1' }}
+    <div
+      style={{ position: 'relative', display: 'inline-flex' }}
+      onMouseEnter={() => setShowTooltip(true)}
+      onMouseLeave={() => setShowTooltip(false)}
     >
-      {isEstablished && (
-        <span style={{ fontSize: '10px', lineHeight: 1, marginRight: '1px' }}>★</span>
-      )}
-      <span>{company.name}</span>
-      {hasMultipleAudiences && (
-        <span
+      {showTooltip && company.description && (
+        <div
           style={{
             position: 'absolute',
-            bottom: '3px',
-            right: '6px',
-            display: 'flex',
-            gap: '2px',
+            bottom: 'calc(100% + 8px)',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            maxWidth: '280px',
+            width: 'max-content',
+            backgroundColor: '#111827',
+            color: 'white',
+            fontSize: '11px',
+            fontWeight: '400',
+            lineHeight: 1.5,
+            padding: '8px 10px',
+            borderRadius: '6px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.35)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            zIndex: 60,
+            pointerEvents: 'none',
+            opacity: showTooltip ? 1 : 0,
+            transition: 'opacity 0.15s ease',
+            whiteSpace: 'normal',
           }}
         >
-          {company.builtFor.map(audience => (
-            <span
-              key={audience}
-              style={{
-                width: '6px',
-                height: '6px',
-                borderRadius: '9999px',
-                backgroundColor: AUDIENCE_COLORS[audience] || '#6B7280',
-                border: '1px solid rgba(255,255,255,0.55)',
-                display: 'inline-block',
-                flexShrink: 0,
-              }}
-            />
-          ))}
-        </span>
+          {company.description}
+        </div>
       )}
-    </button>
+      <button
+        onClick={() => !isDimmed && onClick(company)}
+        style={{
+          position: 'relative',
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '4px',
+          padding: hasMultipleAudiences ? '4px 10px 10px 10px' : '4px 10px',
+          fontSize: '12px',
+          fontWeight: isEstablished ? '700' : '500',
+          color: 'white',
+          backgroundColor: bgColor,
+          borderRadius: '8px',
+          border: isEstablished
+            ? '2px solid rgba(255,255,255,0.55)'
+            : '1px solid rgba(0,0,0,0.15)',
+          boxShadow: isEstablished
+            ? '0 0 0 1px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.2)'
+            : '0 1px 2px rgba(0,0,0,0.15)',
+          cursor: isDimmed ? 'default' : 'pointer',
+          opacity: isDimmed ? 0.15 : 1,
+          transition: 'opacity 0.2s ease, transform 0.1s ease',
+          outline: 'none',
+          whiteSpace: 'nowrap',
+        }}
+        onMouseEnter={e => { if (!isDimmed) e.currentTarget.style.opacity = '0.85' }}
+        onMouseLeave={e => { if (!isDimmed) e.currentTarget.style.opacity = '1' }}
+      >
+        {isEstablished && (
+          <span style={{ fontSize: '10px', lineHeight: 1, marginRight: '1px' }}>★</span>
+        )}
+        <span>{company.name}</span>
+        {hasMultipleAudiences && (
+          <span
+            style={{
+              position: 'absolute',
+              bottom: '3px',
+              right: '6px',
+              display: 'flex',
+              gap: '2px',
+            }}
+          >
+            {company.builtFor.map(audience => (
+              <span
+                key={audience}
+                style={{
+                  width: '6px',
+                  height: '6px',
+                  borderRadius: '9999px',
+                  backgroundColor: AUDIENCE_COLORS[audience] || '#6B7280',
+                  border: '1px solid rgba(255,255,255,0.55)',
+                  display: 'inline-block',
+                  flexShrink: 0,
+                }}
+              />
+            ))}
+          </span>
+        )}
+      </button>
+    </div>
   )
 }
 
@@ -300,9 +335,14 @@ function DetailRow({ label, value }) {
   )
 }
 
-export default function MarketMap({ companies, framework = 'v1' }) {
-  const [audienceFilters, setAudienceFilters] = useState(new Set())
-  const [stageFilters, setStageFilters] = useState(new Set())
+export default function MarketMap({
+  companies,
+  framework = 'v1',
+  audienceFilters,
+  setAudienceFilters,
+  stageFilters,
+  setStageFilters,
+}) {
   const [selectedCompany, setSelectedCompany] = useState(null)
 
   const controlsRef = useRef(null)
@@ -454,6 +494,7 @@ export default function MarketMap({ companies, framework = 'v1' }) {
           const style = framework === 'v2' ? CATEGORY_STYLE_V2[category] : CATEGORY_STYLE[category]
           const total = framework === 'v2' ? CATEGORIES_V2.length : CATEGORIES.length
           const isLast = idx === total - 1
+          const visibleCount = catCompanies.filter(matchesFilters).length
 
           return (
             <div
@@ -486,7 +527,7 @@ export default function MarketMap({ companies, framework = 'v1' }) {
                   {style.label}
                 </h2>
                 <p style={{ color: '#6B7280', fontSize: '11px', margin: '2px 0 0 0' }}>
-                  {catCompanies.length} companies
+                  {visibleCount} companies
                 </p>
               </div>
 
@@ -503,7 +544,14 @@ export default function MarketMap({ companies, framework = 'v1' }) {
                 {catCompanies.map((company, i) => (
                   <React.Fragment key={company.name}>
                     {i > 0 && company.builtFor[0] !== catCompanies[i - 1].builtFor[0] && (
-                      <div style={{ flexBasis: '100%', height: 0 }} />
+                      <div
+                        style={{
+                          flexBasis: '100%',
+                          height: '1px',
+                          backgroundColor: 'rgba(255,255,255,0.08)',
+                          margin: '4px 0',
+                        }}
+                      />
                     )}
                     <CompanyChip
                       company={company}

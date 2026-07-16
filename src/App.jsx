@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { COMPANIES } from './data/companies'
 import MarketMap from './components/MarketMap'
 import PasswordGate, { isAuthenticated } from './components/PasswordGate'
@@ -6,10 +6,25 @@ import PasswordGate, { isAuthenticated } from './components/PasswordGate'
 export default function App() {
   const [authed, setAuthed] = useState(isAuthenticated)
   const [framework, setFramework] = useState('v2')
+  const [audienceFilters, setAudienceFilters] = useState(new Set())
+  const [stageFilters, setStageFilters] = useState(new Set())
 
   if (!authed) {
     return <PasswordGate onAuthenticated={() => setAuthed(true)} />
   }
+
+  const visibleCount = useMemo(() => {
+    const anyAudienceActive = audienceFilters.size > 0
+    const anyStageActive = stageFilters.size > 0
+    if (!anyAudienceActive && !anyStageActive) return COMPANIES.length
+
+    return COMPANIES.filter(company => {
+      const stageKey = company.stage === 'Established' ? 'Established Scale' : 'Early Growth'
+      const matchesAudience = !anyAudienceActive || company.builtFor.some(a => audienceFilters.has(a))
+      const matchesStage = !anyStageActive || stageFilters.has(stageKey)
+      return matchesAudience && matchesStage
+    }).length
+  }, [audienceFilters, stageFilters])
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#111827' }}>
@@ -61,8 +76,8 @@ export default function App() {
             }}
           >
             {[
-              { key: 'v2', label: 'Framework 1' },
-              { key: 'v1', label: 'Framework 2' },
+              { key: 'v2', label: 'By Function' },
+              { key: 'v1', label: 'By Thesis' },
             ].map(({ key, label }) => {
               const active = framework === key
               return (
@@ -89,12 +104,19 @@ export default function App() {
           </div>
 
           <div style={{ fontSize: '12px', color: '#6B7280' }}>
-            <span style={{ color: 'white', fontWeight: '600' }}>{COMPANIES.length}</span> companies
+            <span style={{ color: 'white', fontWeight: '600' }}>{visibleCount}</span> companies
           </div>
         </div>
       </header>
 
-      <MarketMap companies={COMPANIES} framework={framework} />
+      <MarketMap
+        companies={COMPANIES}
+        framework={framework}
+        audienceFilters={audienceFilters}
+        setAudienceFilters={setAudienceFilters}
+        stageFilters={stageFilters}
+        setStageFilters={setStageFilters}
+      />
     </div>
   )
 }
