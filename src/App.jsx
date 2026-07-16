@@ -76,8 +76,8 @@ export default function App() {
             }}
           >
             {[
-              { key: 'v2', label: 'By Function' },
-              { key: 'v1', label: 'By Thesis' },
+              { key: 'v2', label: 'By Thesis' },
+              { key: 'v1', label: 'By Function' },
             ].map(({ key, label }) => {
               const active = framework === key
               return (
