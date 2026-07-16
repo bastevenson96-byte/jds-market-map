@@ -21,17 +21,38 @@ const COLUMN_WIDTHS = {
   v2: '45fr 35fr 20fr',
 }
 
+const TOOLTIP_MAX_WIDTH = 280
+const TOOLTIP_VIEWPORT_MARGIN = 12
+
 function CompanyChip({ company, isDimmed, onClick }) {
   const [showTooltip, setShowTooltip] = useState(false)
+  const [tooltipShift, setTooltipShift] = useState(0)
+  const wrapperRef = useRef(null)
   const primaryAudience = company.builtFor[0]
   const bgColor = AUDIENCE_COLORS[primaryAudience] || '#6B7280'
   const isEstablished = company.stage === 'Established'
   const hasMultipleAudiences = company.builtFor.length > 1
 
+  function handleMouseEnter() {
+    const rect = wrapperRef.current?.getBoundingClientRect()
+    if (rect) {
+      const center = rect.left + rect.width / 2
+      const halfWidth = TOOLTIP_MAX_WIDTH / 2
+      let shift = 0
+      const overflowLeft = TOOLTIP_VIEWPORT_MARGIN - (center - halfWidth)
+      if (overflowLeft > 0) shift = overflowLeft
+      const overflowRight = (center + halfWidth) - (window.innerWidth - TOOLTIP_VIEWPORT_MARGIN)
+      if (overflowRight > 0) shift = -overflowRight
+      setTooltipShift(shift)
+    }
+    setShowTooltip(true)
+  }
+
   return (
     <div
+      ref={wrapperRef}
       style={{ position: 'relative', display: 'inline-flex' }}
-      onMouseEnter={() => setShowTooltip(true)}
+      onMouseEnter={handleMouseEnter}
       onMouseLeave={() => setShowTooltip(false)}
     >
       {showTooltip && company.description && (
@@ -40,8 +61,8 @@ function CompanyChip({ company, isDimmed, onClick }) {
             position: 'absolute',
             bottom: 'calc(100% + 8px)',
             left: '50%',
-            transform: 'translateX(-50%)',
-            maxWidth: '280px',
+            transform: `translateX(calc(-50% + ${tooltipShift}px))`,
+            maxWidth: `${TOOLTIP_MAX_WIDTH}px`,
             width: 'max-content',
             backgroundColor: '#111827',
             color: 'white',
