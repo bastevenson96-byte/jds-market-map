@@ -57,7 +57,7 @@ function CompanyChip({ company, isDimmed, onClick }) {
   return (
     <div
       ref={wrapperRef}
-      style={{ position: 'relative', display: 'inline-flex' }}
+      style={{ position: 'relative', display: 'inline-flex', maxWidth: '100%' }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={() => setShowTooltip(false)}
     >
@@ -112,7 +112,9 @@ function CompanyChip({ company, isDimmed, onClick }) {
           opacity: isDimmed ? 0.15 : 1,
           transition: 'opacity 0.2s ease, transform 0.1s ease',
           outline: 'none',
-          whiteSpace: 'nowrap',
+          whiteSpace: 'normal',
+          maxWidth: '100%',
+          wordBreak: 'break-word',
         }}
         onMouseEnter={e => { if (!isDimmed) e.currentTarget.style.opacity = '0.85' }}
         onMouseLeave={e => { if (!isDimmed) e.currentTarget.style.opacity = '1' }}
