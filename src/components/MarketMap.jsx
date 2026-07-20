@@ -23,8 +23,8 @@ const CATEGORY_SUBTITLE_V2 = {
 }
 
 const COLUMN_WIDTHS = {
-  v1: '60fr 25fr 15fr',
-  v2: '1fr 1fr 1fr',
+  v1: '44% 27% 29%',
+  v2: '44% 27% 29%',
 }
 
 const TOOLTIP_MAX_WIDTH = 280
