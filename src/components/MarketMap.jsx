@@ -11,9 +11,9 @@ const CATEGORY_STYLE = {
 }
 
 const CATEGORY_STYLE_V2 = {
-  'Athlete Infrastructure': { color: '#818CF8', label: 'Athlete Infrastructure' },
-  'Fan Culture and IP': { color: '#FB7185', label: 'Fan Culture & IP' },
-  'Access Development and Participation': { color: '#34D399', label: 'Access, Development & Participation' },
+  'Athlete Infrastructure': { color: '#FFFFFF', label: 'Athlete Infrastructure' },
+  'Fan Culture and IP': { color: '#FFFFFF', label: 'Fan Culture & IP' },
+  'Access Development and Participation': { color: '#FFFFFF', label: 'Access, Development & Participation' },
 }
 
 const CATEGORY_SUBTITLE_V2 = {
