@@ -509,10 +509,7 @@ export default function MarketMap({
                   gap: '5px',
                 }}
               >
-                {s === 'Established Scale' && (
-                  <span style={{ fontSize: '10px', lineHeight: 1 }}>★</span>
-                )}
-                {s}
+                {s === 'Established Scale' ? 'Established Scale (*)' : s}
               </button>
             )
           })}
