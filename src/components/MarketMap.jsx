@@ -562,93 +562,118 @@ export default function MarketMap({
         </div>
       </div>
 
-      {/* Three-column grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: COLUMN_WIDTHS[framework], minHeight: 'calc(100vh - 64px)' }}>
-        {(framework === 'v2' ? CATEGORIES_V2 : CATEGORIES).map((category, idx) => {
+      {/* Shared per-column data, computed once so the header row and chip grid stay in sync */}
+      {(() => {
+        const categoryList = framework === 'v2' ? CATEGORIES_V2 : CATEGORIES
+        const columnWidths = COLUMN_WIDTHS[framework].split(' ')
+        const columns = categoryList.map((category, idx) => {
           const catCompanies = (framework === 'v2'
             ? companies.filter(c => c.categoryV2 === category)
             : companies.filter(c => c.category === category)
           ).slice().sort((a, b) => AUDIENCES.indexOf(a.builtFor[0]) - AUDIENCES.indexOf(b.builtFor[0]))
-          const style = framework === 'v2' ? CATEGORY_STYLE_V2[category] : CATEGORY_STYLE[category]
-          const total = framework === 'v2' ? CATEGORIES_V2.length : CATEGORIES.length
-          const isLast = idx === total - 1
-          const visibleCount = catCompanies.filter(matchesFilters).length
+          return {
+            category,
+            catCompanies,
+            style: framework === 'v2' ? CATEGORY_STYLE_V2[category] : CATEGORY_STYLE[category],
+            isLast: idx === categoryList.length - 1,
+            visibleCount: catCompanies.filter(matchesFilters).length,
+            width: columnWidths[idx],
+          }
+        })
 
-          return (
+        return (
+          <>
+            {/* Column headers (sticky row, stretched to equal height so dividers line up) */}
             <div
-              key={category}
               style={{
-                borderRight: isLast ? 'none' : '1px solid #374151',
+                position: 'sticky',
+                top: colHeaderTop,
+                zIndex: 30,
+                display: 'flex',
+                alignItems: 'stretch',
+                backgroundColor: '#111827',
               }}
             >
-              {/* Column header (sticky) */}
-              <div
-                style={{
-                  position: 'sticky',
-                  top: colHeaderTop,
-                  zIndex: 30,
-                  backgroundColor: '#111827',
-                  borderBottom: '1px solid #374151',
-                  padding: '10px 16px',
-                }}
-              >
-                <h2
+              {columns.map(col => (
+                <div
+                  key={col.category}
                   style={{
-                    color: style.color,
-                    fontSize: '15px',
-                    fontWeight: '800',
-                    lineHeight: 1.25,
-                    margin: 0,
-                    whiteSpace: 'nowrap',
+                    flex: `0 0 ${col.width}`,
+                    width: col.width,
+                    borderRight: col.isLast ? 'none' : '1px solid #374151',
+                    borderBottom: '1px solid #374151',
+                    padding: '10px 16px',
                   }}
                 >
-                  {style.label}
-                </h2>
-                {framework === 'v2' && (
-                  <p
+                  <h2
                     style={{
-                      color: 'rgba(255,255,255,0.45)',
-                      fontSize: '12px',
-                      fontStyle: 'italic',
-                      lineHeight: 1.35,
-                      margin: '3px 0 0 0',
+                      color: col.style.color,
+                      fontSize: '15px',
+                      fontWeight: '800',
+                      lineHeight: 1.25,
+                      margin: 0,
+                      whiteSpace: 'nowrap',
                     }}
                   >
-                    {CATEGORY_SUBTITLE_V2[category]}
+                    {col.style.label}
+                  </h2>
+                  {framework === 'v2' && (
+                    <p
+                      style={{
+                        color: 'rgba(255,255,255,0.45)',
+                        fontSize: '12px',
+                        fontStyle: 'italic',
+                        lineHeight: 1.35,
+                        margin: '3px 0 0 0',
+                      }}
+                    >
+                      {CATEGORY_SUBTITLE_V2[col.category]}
+                    </p>
+                  )}
+                  <p style={{ color: '#6B7280', fontSize: '11px', margin: '2px 0 0 0' }}>
+                    {col.visibleCount} companies
                   </p>
-                )}
-                <p style={{ color: '#6B7280', fontSize: '11px', margin: '2px 0 0 0' }}>
-                  {visibleCount} companies
-                </p>
-              </div>
-
-              {/* Chips */}
-              <div
-                style={{
-                  padding: '12px 14px',
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: '6px',
-                  alignContent: 'flex-start',
-                }}
-              >
-                {catCompanies.map((company, i) => (
-                  <React.Fragment key={company.name}>
-                    {i > 0 && company.builtFor[0] !== catCompanies[i - 1].builtFor[0] && (
-                      <div style={{ flexBasis: '100%', height: 0 }} />
-                    )}
-                    <CompanyChip
-                      company={company}
-                      isDimmed={!matchesFilters(company)}
-                      onClick={setSelectedCompany}
-                    />
-                  </React.Fragment>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
-          )
-        })}
-      </div>
+
+            {/* Three-column chip grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: COLUMN_WIDTHS[framework], minHeight: 'calc(100vh - 64px)' }}>
+              {columns.map(col => (
+                <div
+                  key={col.category}
+                  style={{
+                    borderRight: col.isLast ? 'none' : '1px solid #374151',
+                  }}
+                >
+                  <div
+                    style={{
+                      padding: '12px 14px',
+                      display: 'flex',
+                      flexWrap: 'wrap',
+                      gap: '6px',
+                      alignContent: 'flex-start',
+                    }}
+                  >
+                    {col.catCompanies.map((company, i) => (
+                      <React.Fragment key={company.name}>
+                        {i > 0 && company.builtFor[0] !== col.catCompanies[i - 1].builtFor[0] && (
+                          <div style={{ flexBasis: '100%', height: 0 }} />
+                        )}
+                        <CompanyChip
+                          company={company}
+                          isDimmed={!matchesFilters(company)}
+                          onClick={setSelectedCompany}
+                        />
+                      </React.Fragment>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )
+      })()}
 
       <SidePanel company={selectedCompany} framework={framework} onClose={() => setSelectedCompany(null)} />
     </>
