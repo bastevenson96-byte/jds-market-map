@@ -23,7 +23,7 @@ const CATEGORY_SUBTITLE_V2 = {
 }
 
 const COLUMN_WIDTHS = {
-  v1: '60% 25% 15%',
+  v1: '56% 25% 19%',
   v2: '37% 34% 29%',
 }
 
@@ -57,7 +57,7 @@ function CompanyChip({ company, isDimmed, onClick }) {
   return (
     <div
       ref={wrapperRef}
-      style={{ position: 'relative', display: 'inline-flex', maxWidth: '100%' }}
+      style={{ position: 'relative', display: 'inline-flex' }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={() => setShowTooltip(false)}
     >
@@ -112,9 +112,7 @@ function CompanyChip({ company, isDimmed, onClick }) {
           opacity: isDimmed ? 0.15 : 1,
           transition: 'opacity 0.2s ease, transform 0.1s ease',
           outline: 'none',
-          whiteSpace: 'normal',
-          maxWidth: '100%',
-          wordBreak: 'break-word',
+          whiteSpace: 'nowrap',
         }}
         onMouseEnter={e => { if (!isDimmed) e.currentTarget.style.opacity = '0.85' }}
         onMouseLeave={e => { if (!isDimmed) e.currentTarget.style.opacity = '1' }}
