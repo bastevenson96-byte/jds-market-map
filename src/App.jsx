@@ -60,7 +60,7 @@ export default function App() {
             College Sports Market Map
           </h1>
           <p style={{ color: '#6B7280', fontSize: '11px', margin: '3px 0 0 0' }}>
-            JDS Sports · Internal Research · Jul 2026
+            JDS Sports · Internal Research · Last updated July 21, 2026
           </p>
         </div>
 
