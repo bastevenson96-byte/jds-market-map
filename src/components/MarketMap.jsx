@@ -24,7 +24,7 @@ const CATEGORY_SUBTITLE_V2 = {
 
 const COLUMN_WIDTHS = {
   v1: '60fr 25fr 15fr',
-  v2: '45fr 35fr 20fr',
+  v2: '1fr 1fr 1fr',
 }
 
 const TOOLTIP_MAX_WIDTH = 280
