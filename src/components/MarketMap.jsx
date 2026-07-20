@@ -23,7 +23,7 @@ const CATEGORY_SUBTITLE_V2 = {
 }
 
 const COLUMN_WIDTHS = {
-  v1: '37% 34% 29%',
+  v1: '60% 25% 15%',
   v2: '37% 34% 29%',
 }
 
