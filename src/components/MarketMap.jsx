@@ -13,7 +13,7 @@ const CATEGORY_STYLE = {
 const CATEGORY_STYLE_V2 = {
   'Athlete Infrastructure': { color: '#818CF8', label: 'Athlete Infrastructure' },
   'Fan Culture and IP': { color: '#FB7185', label: 'Fan Culture & IP' },
-  'Access Development and Participation': { color: '#34D399', label: 'Access, Development\n& Participation' },
+  'Access Development and Participation': { color: '#34D399', label: 'Access, Development & Participation' },
 }
 
 const CATEGORY_SUBTITLE_V2 = {
@@ -602,7 +602,7 @@ export default function MarketMap({
                     fontWeight: '800',
                     lineHeight: 1.25,
                     margin: 0,
-                    whiteSpace: 'pre-line',
+                    whiteSpace: 'nowrap',
                   }}
                 >
                   {style.label}
