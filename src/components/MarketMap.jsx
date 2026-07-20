@@ -152,7 +152,7 @@ function CompanyChip({ company, isDimmed, onClick }) {
   )
 }
 
-function SidePanel({ company, onClose }) {
+function SidePanel({ company, framework, onClose }) {
   const isOpen = !!company
 
   useEffect(() => {
@@ -166,6 +166,11 @@ function SidePanel({ company, onClose }) {
 
   const primaryColor = company ? (AUDIENCE_COLORS[company.builtFor[0]] || '#6B7280') : '#6B7280'
   const isEstablished = company?.stage === 'Established'
+  const categoryLabel = company
+    ? (framework === 'v2'
+        ? (CATEGORY_STYLE_V2[company.categoryV2]?.label || company.categoryV2).replace('\n', ' ')
+        : company.category)
+    : ''
 
   return (
     <>
@@ -254,7 +259,7 @@ function SidePanel({ company, onClose }) {
                     color: 'white',
                   }}
                 >
-                  {company.category}
+                  {categoryLabel}
                 </span>
                 <span
                   style={{
@@ -648,7 +653,7 @@ export default function MarketMap({
         })}
       </div>
 
-      <SidePanel company={selectedCompany} onClose={() => setSelectedCompany(null)} />
+      <SidePanel company={selectedCompany} framework={framework} onClose={() => setSelectedCompany(null)} />
     </>
   )
 }
