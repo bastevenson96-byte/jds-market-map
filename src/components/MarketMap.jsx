@@ -441,7 +441,7 @@ export default function MarketMap({
       >
         {/* Filters row */}
         <div style={{ padding: '10px 20px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '8px' }}>
-          <span style={{ fontSize: '11px', color: '#6B7280', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.08em', marginRight: '4px' }}>
+          <span style={{ fontSize: '11px', color: '#FFFFFF', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.08em', marginRight: '4px' }}>
             Built For
           </span>
           {AUDIENCES.map(a => {
@@ -484,7 +484,7 @@ export default function MarketMap({
 
           <div style={{ width: '1px', height: '20px', backgroundColor: '#374151', margin: '0 4px' }} />
 
-          <span style={{ fontSize: '11px', color: '#6B7280', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.08em', marginRight: '4px' }}>
+          <span style={{ fontSize: '11px', color: '#FFFFFF', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.08em', marginRight: '4px' }}>
             Stage
           </span>
           {STAGES.map(s => {
