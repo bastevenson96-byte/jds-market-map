@@ -5,9 +5,9 @@ const AUDIENCES = ['Athlete', 'Institution', 'Brand', 'Consumer']
 const STAGES = ['Early Growth', 'Established Scale']
 
 const CATEGORY_STYLE = {
-  'Tech': { color: '#818CF8', label: 'Tech' },
-  'Media': { color: '#FB7185', label: 'Media' },
-  'Athlete Organization': { color: '#34D399', label: 'Athlete\nOrganization' },
+  'Tech': { color: '#FFFFFF', label: 'Tech' },
+  'Media': { color: '#FFFFFF', label: 'Media' },
+  'Athlete Organization': { color: '#FFFFFF', label: 'Athlete\nOrganization' },
 }
 
 const CATEGORY_STYLE_V2 = {
