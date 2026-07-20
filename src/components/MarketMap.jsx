@@ -16,6 +16,12 @@ const CATEGORY_STYLE_V2 = {
   'Access Development and Participation': { color: '#34D399', label: 'Access, Development\n& Participation' },
 }
 
+const CATEGORY_SUBTITLE_V2 = {
+  'Athlete Infrastructure': 'How athletes actually succeed in this new environment',
+  'Fan Culture and IP': 'How fans connect to the athletes and moments that matter to them',
+  'Access Development and Participation': 'How the broader ecosystem grows in ways that are durable',
+}
+
 const COLUMN_WIDTHS = {
   v1: '60fr 25fr 15fr',
   v2: '45fr 35fr 20fr',
@@ -365,6 +371,7 @@ export default function MarketMap({
   setStageFilters,
 }) {
   const [selectedCompany, setSelectedCompany] = useState(null)
+  const [searchQuery, setSearchQuery] = useState('')
 
   const controlsRef = useRef(null)
   const [controlsH, setControlsH] = useState(92)
@@ -400,13 +407,15 @@ export default function MarketMap({
   function matchesFilters(company) {
     const anyAudienceActive = audienceFilters.size > 0
     const anyStageActive = stageFilters.size > 0
-    if (!anyAudienceActive && !anyStageActive) return true
+    const query = searchQuery.trim().toLowerCase()
+    const anyQueryActive = query.length > 0
 
     const stageKey = company.stage === 'Established' ? 'Established Scale' : 'Early Growth'
     const matchesAudience = !anyAudienceActive || company.builtFor.some(a => audienceFilters.has(a))
     const matchesStage = !anyStageActive || stageFilters.has(stageKey)
+    const matchesQuery = !anyQueryActive || company.name.toLowerCase().includes(query)
 
-    return matchesAudience && matchesStage
+    return matchesAudience && matchesStage && matchesQuery
   }
 
   const HEADER_H = 64
@@ -502,6 +511,52 @@ export default function MarketMap({
               </button>
             )
           })}
+
+          <div style={{ width: '1px', height: '20px', backgroundColor: '#374151', margin: '0 4px' }} />
+
+          <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder="Search companies…"
+              style={{
+                backgroundColor: '#1F2937',
+                border: '1.5px solid #374151',
+                borderRadius: '9999px',
+                padding: '5px 28px 5px 14px',
+                fontSize: '12px',
+                fontWeight: '500',
+                color: 'white',
+                outline: 'none',
+                width: '180px',
+                transition: 'border-color 0.15s ease',
+              }}
+              onFocus={e => { e.currentTarget.style.borderColor = '#6366F1' }}
+              onBlur={e => { e.currentTarget.style.borderColor = '#374151' }}
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                style={{
+                  position: 'absolute',
+                  right: '8px',
+                  background: 'none',
+                  border: 'none',
+                  color: '#9CA3AF',
+                  cursor: 'pointer',
+                  fontSize: '15px',
+                  lineHeight: 1,
+                  padding: 0,
+                  outline: 'none',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.color = '#F9FAFB' }}
+                onMouseLeave={e => { e.currentTarget.style.color = '#9CA3AF' }}
+              >
+                ×
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -547,6 +602,19 @@ export default function MarketMap({
                 >
                   {style.label}
                 </h2>
+                {framework === 'v2' && (
+                  <p
+                    style={{
+                      color: 'rgba(255,255,255,0.45)',
+                      fontSize: '12px',
+                      fontStyle: 'italic',
+                      lineHeight: 1.35,
+                      margin: '3px 0 0 0',
+                    }}
+                  >
+                    {CATEGORY_SUBTITLE_V2[category]}
+                  </p>
+                )}
                 <p style={{ color: '#6B7280', fontSize: '11px', margin: '2px 0 0 0' }}>
                   {visibleCount} companies
                 </p>
