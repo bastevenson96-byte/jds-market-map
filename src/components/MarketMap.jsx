@@ -1,4 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
+import { flushSync } from 'react-dom'
+import html2canvas from 'html2canvas'
+import { jsPDF } from 'jspdf'
 import { CATEGORIES, CATEGORIES_V2, AUDIENCE_COLORS, notionUrl } from '../data/companies'
 
 const AUDIENCES = ['Athlete', 'Institution', 'Brand', 'Consumer']
@@ -39,7 +42,19 @@ const COLUMN_WIDTHS = {
 const TOOLTIP_MAX_WIDTH = 280
 const TOOLTIP_VIEWPORT_MARGIN = 12
 
-function CompanyChip({ company, isDimmed, onClick }) {
+function buildExportFilename(framework, audienceFilters, stageFilters, ext) {
+  const view = framework === 'v2' ? 'by-thesis' : 'by-function'
+  const slugify = s => s.toLowerCase().replace(/\s+/g, '-')
+  const filterParts = [
+    ...Array.from(audienceFilters).sort().map(slugify),
+    ...Array.from(stageFilters).sort().map(slugify),
+  ]
+  const filterSlug = filterParts.length > 0 ? filterParts.join('_') : 'all'
+  const date = new Date().toISOString().slice(0, 10)
+  return `jds-market-map_${view}_${filterSlug}_${date}.${ext}`
+}
+
+function CompanyChip({ company, isDimmed, hideDimmed, onClick }) {
   const [showTooltip, setShowTooltip] = useState(false)
   const [tooltipShift, setTooltipShift] = useState(0)
   const wrapperRef = useRef(null)
@@ -47,6 +62,8 @@ function CompanyChip({ company, isDimmed, onClick }) {
   const bgColor = AUDIENCE_COLORS[primaryAudience] || '#6B7280'
   const isEstablished = company.stage === 'Established'
   const hasMultipleAudiences = company.builtFor.length > 1
+
+  if (isDimmed && hideDimmed) return null
 
   function handleMouseEnter() {
     const rect = wrapperRef.current?.getBoundingClientRect()
@@ -458,6 +475,8 @@ export default function MarketMap({
 }) {
   const [selectedCompany, setSelectedCompany] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
+  const [isExporting, setIsExporting] = useState(false)
+  const exportRef = useRef(null)
 
   const controlsRef = useRef(null)
   const [controlsH, setControlsH] = useState(92)
@@ -502,6 +521,47 @@ export default function MarketMap({
     const matchesQuery = !anyQueryActive || company.name.toLowerCase().includes(query)
 
     return matchesAudience && matchesStage && matchesQuery
+  }
+
+  async function handleExport(kind) {
+    if (isExporting || !exportRef.current) return
+
+    // Hide (not fade) filtered-out companies for the capture, then restore live behavior after.
+    flushSync(() => setIsExporting(true))
+
+    try {
+      const canvas = await html2canvas(exportRef.current, {
+        backgroundColor: '#111827',
+        scale: 2,
+        useCORS: true,
+      })
+      const filename = buildExportFilename(framework, audienceFilters, stageFilters, kind)
+
+      if (kind === 'png') {
+        const link = document.createElement('a')
+        link.href = canvas.toDataURL('image/png')
+        link.download = filename
+        link.click()
+      } else {
+        const imgData = canvas.toDataURL('image/png')
+        const pdf = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' })
+        const pageWidth = pdf.internal.pageSize.getWidth()
+        const pageHeight = pdf.internal.pageSize.getHeight()
+        const imgRatio = canvas.width / canvas.height
+        let renderWidth = pageWidth
+        let renderHeight = renderWidth / imgRatio
+        if (renderHeight > pageHeight) {
+          renderHeight = pageHeight
+          renderWidth = renderHeight * imgRatio
+        }
+        const x = (pageWidth - renderWidth) / 2
+        const y = (pageHeight - renderHeight) / 2
+        pdf.addImage(imgData, 'PNG', x, y, renderWidth, renderHeight)
+        pdf.save(filename)
+      }
+    } finally {
+      flushSync(() => setIsExporting(false))
+    }
   }
 
   const HEADER_H = 64
@@ -611,6 +671,51 @@ export default function MarketMap({
               </button>
             )}
           </div>
+
+          <div style={{ width: '1px', height: '20px', backgroundColor: '#374151', margin: '0 4px' }} />
+
+          <div style={{ display: 'inline-flex', gap: '6px' }}>
+            <button
+              onClick={() => handleExport('png')}
+              disabled={isExporting}
+              style={{
+                borderRadius: '9999px',
+                padding: '5px 14px',
+                fontSize: '12px',
+                fontWeight: '600',
+                cursor: isExporting ? 'default' : 'pointer',
+                border: '1.5px solid #374151',
+                backgroundColor: 'transparent',
+                color: isExporting ? '#4B5563' : '#9CA3AF',
+                transition: 'all 0.15s ease',
+                outline: 'none',
+              }}
+              onMouseEnter={e => { if (!isExporting) e.currentTarget.style.color = '#F9FAFB' }}
+              onMouseLeave={e => { if (!isExporting) e.currentTarget.style.color = '#9CA3AF' }}
+            >
+              {isExporting ? 'Exporting…' : 'Export PNG'}
+            </button>
+            <button
+              onClick={() => handleExport('pdf')}
+              disabled={isExporting}
+              style={{
+                borderRadius: '9999px',
+                padding: '5px 14px',
+                fontSize: '12px',
+                fontWeight: '600',
+                cursor: isExporting ? 'default' : 'pointer',
+                border: '1.5px solid #374151',
+                backgroundColor: 'transparent',
+                color: isExporting ? '#4B5563' : '#9CA3AF',
+                transition: 'all 0.15s ease',
+                outline: 'none',
+              }}
+              onMouseEnter={e => { if (!isExporting) e.currentTarget.style.color = '#F9FAFB' }}
+              onMouseLeave={e => { if (!isExporting) e.currentTarget.style.color = '#9CA3AF' }}
+            >
+              {isExporting ? 'Exporting…' : 'Export PDF'}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -634,7 +739,7 @@ export default function MarketMap({
         })
 
         return (
-          <>
+          <div ref={exportRef} style={{ backgroundColor: '#111827' }}>
             {/* Column headers (sticky row, stretched to equal height so dividers line up) */}
             <div
               style={{
@@ -715,6 +820,7 @@ export default function MarketMap({
                         <CompanyChip
                           company={company}
                           isDimmed={!matchesFilters(company)}
+                          hideDimmed={isExporting}
                           onClick={setSelectedCompany}
                         />
                       </React.Fragment>
@@ -723,7 +829,7 @@ export default function MarketMap({
                 </div>
               ))}
             </div>
-          </>
+          </div>
         )
       })()}
 
