@@ -4,6 +4,15 @@ import { CATEGORIES, CATEGORIES_V2, AUDIENCE_COLORS, notionUrl } from '../data/c
 const AUDIENCES = ['Athlete', 'Institution', 'Brand', 'Consumer']
 const STAGES = ['Early Growth', 'Established Scale']
 
+const AUDIENCE_TOOLTIPS = {
+  Athlete: 'Built with the athlete as the primary end user — tools for earning, competing, developing, and building a career',
+  Institution: 'Built for athletic departments, universities, and conference offices managing the new commercial landscape',
+  Brand: 'Built for brands and sponsors looking to access and activate college athlete audiences',
+  Consumer: 'Built for fans engaging with college sports content, commerce, and experiences',
+}
+
+const FILTER_TOOLTIP_MAX_WIDTH = 260
+
 const CATEGORY_STYLE = {
   'Tech': { color: '#FFFFFF', label: 'Tech' },
   'Media': { color: '#FFFFFF', label: 'Media' },
@@ -147,6 +156,78 @@ function CompanyChip({ company, isDimmed, onClick }) {
             ))}
           </span>
         )}
+      </button>
+    </div>
+  )
+}
+
+function AudienceButton({ audience, active, onClick }) {
+  const [showTooltip, setShowTooltip] = useState(false)
+
+  return (
+    <div
+      style={{ position: 'relative', display: 'inline-flex' }}
+      onMouseEnter={() => setShowTooltip(true)}
+      onMouseLeave={() => setShowTooltip(false)}
+    >
+      {showTooltip && (
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 'calc(100% + 8px)',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            maxWidth: `${FILTER_TOOLTIP_MAX_WIDTH}px`,
+            width: 'max-content',
+            backgroundColor: '#111827',
+            color: 'white',
+            fontSize: '11px',
+            fontWeight: '400',
+            lineHeight: 1.5,
+            padding: '8px 10px',
+            borderRadius: '6px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.35)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            zIndex: 60,
+            pointerEvents: 'none',
+            opacity: showTooltip ? 1 : 0,
+            transition: 'opacity 0.15s ease',
+            whiteSpace: 'normal',
+          }}
+        >
+          {AUDIENCE_TOOLTIPS[audience]}
+        </div>
+      )}
+      <button
+        onClick={onClick}
+        style={{
+          borderRadius: '9999px',
+          padding: '5px 14px',
+          fontSize: '12px',
+          fontWeight: '600',
+          cursor: 'pointer',
+          border: `1.5px solid ${active ? AUDIENCE_COLORS[audience] : '#374151'}`,
+          backgroundColor: active ? AUDIENCE_COLORS[audience] : 'transparent',
+          color: active ? 'white' : '#6B7280',
+          transition: 'all 0.15s ease',
+          outline: 'none',
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '6px',
+        }}
+      >
+        <span
+          style={{
+            width: '8px',
+            height: '8px',
+            borderRadius: '9999px',
+            backgroundColor: AUDIENCE_COLORS[audience],
+            display: 'inline-block',
+            flexShrink: 0,
+            border: active ? '1px solid rgba(255,255,255,0.6)' : 'none',
+          }}
+        />
+        {audience}
       </button>
     </div>
   )
@@ -444,43 +525,14 @@ export default function MarketMap({
           <span style={{ fontSize: '11px', color: '#FFFFFF', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.08em', marginRight: '4px' }}>
             Built For
           </span>
-          {AUDIENCES.map(a => {
-            const active = audienceFilters.has(a)
-            return (
-              <button
-                key={a}
-                onClick={() => toggleAudience(a)}
-                style={{
-                  borderRadius: '9999px',
-                  padding: '5px 14px',
-                  fontSize: '12px',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  border: `1.5px solid ${active ? AUDIENCE_COLORS[a] : '#374151'}`,
-                  backgroundColor: active ? AUDIENCE_COLORS[a] : 'transparent',
-                  color: active ? 'white' : '#6B7280',
-                  transition: 'all 0.15s ease',
-                  outline: 'none',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                }}
-              >
-                <span
-                  style={{
-                    width: '8px',
-                    height: '8px',
-                    borderRadius: '9999px',
-                    backgroundColor: AUDIENCE_COLORS[a],
-                    display: 'inline-block',
-                    flexShrink: 0,
-                    border: active ? '1px solid rgba(255,255,255,0.6)' : 'none',
-                  }}
-                />
-                {a}
-              </button>
-            )
-          })}
+          {AUDIENCES.map(a => (
+            <AudienceButton
+              key={a}
+              audience={a}
+              active={audienceFilters.has(a)}
+              onClick={() => toggleAudience(a)}
+            />
+          ))}
 
           <div style={{ width: '1px', height: '20px', backgroundColor: '#374151', margin: '0 4px' }} />
 
