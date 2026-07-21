@@ -140,7 +140,7 @@ function CompanyChip({ company, isDimmed, onClick }) {
               gap: '2px',
             }}
           >
-            {company.builtFor.map(audience => (
+            {company.builtFor.slice().sort((a, b) => AUDIENCES.indexOf(a) - AUDIENCES.indexOf(b)).map(audience => (
               <span
                 key={audience}
                 style={{
