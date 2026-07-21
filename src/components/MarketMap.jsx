@@ -174,7 +174,7 @@ function AudienceButton({ audience, active, onClick }) {
         <div
           style={{
             position: 'absolute',
-            bottom: 'calc(100% + 8px)',
+            top: 'calc(100% + 8px)',
             left: '50%',
             transform: 'translateX(-50%)',
             maxWidth: `${FILTER_TOOLTIP_MAX_WIDTH}px`,
