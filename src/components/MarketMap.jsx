@@ -727,7 +727,11 @@ export default function MarketMap({
           const catCompanies = (framework === 'v2'
             ? companies.filter(c => c.categoryV2 === category)
             : companies.filter(c => c.category === category)
-          ).slice().sort((a, b) => AUDIENCES.indexOf(a.builtFor[0]) - AUDIENCES.indexOf(b.builtFor[0]))
+          ).slice().sort((a, b) => {
+            const audienceDiff = AUDIENCES.indexOf(a.builtFor[0]) - AUDIENCES.indexOf(b.builtFor[0])
+            if (audienceDiff !== 0) return audienceDiff
+            return (a.stage === 'Established' ? 1 : 0) - (b.stage === 'Established' ? 1 : 0)
+          })
           return {
             category,
             catCompanies,
