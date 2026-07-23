@@ -9,10 +9,6 @@ export default function App() {
   const [audienceFilters, setAudienceFilters] = useState(new Set())
   const [stageFilters, setStageFilters] = useState(new Set())
 
-  if (!authed) {
-    return <PasswordGate onAuthenticated={() => setAuthed(true)} />
-  }
-
   const visibleCount = useMemo(() => {
     const anyAudienceActive = audienceFilters.size > 0
     const anyStageActive = stageFilters.size > 0
@@ -25,6 +21,10 @@ export default function App() {
       return matchesAudience && matchesStage
     }).length
   }, [audienceFilters, stageFilters])
+
+  if (!authed) {
+    return <PasswordGate onAuthenticated={() => setAuthed(true)} />
+  }
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#111827' }}>
