@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { flushSync } from 'react-dom'
-import html2canvas from 'html2canvas'
-import { jsPDF } from 'jspdf'
 import { CATEGORIES, CATEGORIES_V2, AUDIENCE_COLORS, notionUrl } from '../data/companies'
 
 const AUDIENCES = ['Athlete', 'Institution', 'Brand', 'Consumer']
@@ -530,6 +528,12 @@ export default function MarketMap({
     flushSync(() => setIsExporting(true))
 
     try {
+      // Loaded on demand (not at page load) so these heavy libraries don't bloat the initial bundle.
+      const [{ default: html2canvas }, jspdfModule] = await Promise.all([
+        import('html2canvas'),
+        kind === 'pdf' ? import('jspdf') : Promise.resolve(null),
+      ])
+
       const canvas = await html2canvas(exportRef.current, {
         backgroundColor: '#111827',
         scale: 2,
@@ -543,6 +547,7 @@ export default function MarketMap({
         link.download = filename
         link.click()
       } else {
+        const { jsPDF } = jspdfModule
         const imgData = canvas.toDataURL('image/png')
         const pdf = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' })
         const pageWidth = pdf.internal.pageSize.getWidth()
